@@ -1,0 +1,68 @@
+
+library("readxl")
+setwd("/Users/Gautam Priyanka/Downloads")
+getwd()
+fin<- read.csv("Future 500.csv")
+head(fin)
+Str(fin)
+summary(fin)
+
+fin$expenses <- gsub("dollars","",fin$expenses)
+fin$expenses <- gsub(",","",fin$expenses)
+
+fin$Revenue <- gsub("\\$","",fin$Revenue)
+head(fin)
+
+fin$Revenue <- gsub(",","",fin$Revenue)
+head(fin)
+str(fin)
+
+fin$Expenses <- as.numeric(fin$Expenses)
+fin$Revenue <- as.numeric(fin$Revenue)
+fin$Growth <- as.numeric(fin$Growth)
+str(fin)
+
+fin <- read.csv("Future 500.csv",na.strings = c(""))
+fin[!complete.cases(fin),]
+
+
+fin_backup <- fin
+fin[!complete.cases(fin),]
+fin[is.na(fin$industry),]
+fin[!is.na(fin$industry),]
+
+fin <- fin[!is.na(fin$industry),]
+
+
+rowname <- 1:nrow(fin)
+
+
+fin[is.na(fin$State),]
+fin[is.na(fin$State) & fin$city =="New York",]
+fin[is.na(fin$State) & fin$city =="New York","State"] ="NY"
+
+fin[is.na(fin$State),]
+fin[is.na(fin$State) & fin$city =="San Fransisco",]
+fin[is.na(fin$State) & fin$city =="San Fransisco","State"] ="CA"
+
+med_emp_retail <-median(fin[fin$industry = "Retail","Employee"], na.rm=True)
+fin[is.na(fin$Employee) and fin$Industry =="Retail","Employee"] <- med_emp_retail
+
+med_emp_finserv <-median(fin[fin$industry = "Financial Services","Employee"], na.rm=True)
+fin[is.na(fin$Employee) and fin$Industry =="finserv","Employee"] <- med_emp_finserv
+
+med_growth_const <-median(fin[fin$industry = "Construction","Growth"], na.rm=True)
+fin[is.na(fin$Growth) and fin$Industry =="Construction","Growth"] <- med_growth_const
+
+med_rev_const <-median(fin[fin$industry = "Construction","Revenue"], na.rm=True)
+fin[is.na(fin$Revenue) and fin$Industry =="Construction","Revenue"] <- med_rev_const 
+
+
+
+library(ggplot2)
+p <- ggplot(data= fin)
+
+p+ geom_point(aes(x= Revenue, y= Expenses, colour=Industry, Size=Profit))
+d <- ggplot(data=fin,aes(x= Revenue, y= Expenses, colour=Industry, Size=Profit))
+
+d+ geom_point() +geom_smooth(fill=NA , Size=1.2)
